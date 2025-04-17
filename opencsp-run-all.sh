@@ -25,6 +25,10 @@ if ! grep -q -F "# OPENCSP Scripts" "/run-all.sh"; then
   sed -i "/check_mount_points/i \
     chown -R www-data:www-data /var/www/mediawiki/w/extensions/Widgets/compiled_templates" /run-all.sh
   sed -i "/check_mount_points/i \
+    chown -R www-data:www-data /var/www/mediawiki/w/extensions/PageSync/Temp" /run-all.sh
+  sed -i "/check_mount_points/i \
+    chown -R www-data:www-data /var/www/mediawiki/w/extensions/FlexForm/uploads" /run-all.sh
+  sed -i "/check_mount_points/i \
   fi" /run-all.sh;
 fi
 /run-all.sh
