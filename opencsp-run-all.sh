@@ -1,5 +1,5 @@
 #!/bin/bash
-if ! grep -q -F "# OPENCSP Scripts" "/run-all.sh"; then
+if ! grep -q -F "# OPENCSP Scripts" "/run-all.sh" && [ -e /mediawiki/config/LocalSettings.php ]; then
   echo "FOUND";
   sed -i "/check_mount_points/i \
   if ! grep -q -F \"require_once('./settings/CSPSettings.php');\" \"/var/www/mediawiki/w/LocalSettings.php\"; then" /run-all.sh;
