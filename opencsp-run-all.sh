@@ -23,7 +23,7 @@ if ! grep -q -F "# OPENCSP Scripts" "/run-all.sh"; then
   sed -i "/check_mount_points/i \
     /install_open_csp.sh /var/www/mediawiki/w/ --unattended --run=rebuild-data;" /run-all.sh
   sed -i "/check_mount_points/i \
-    chown -R www-data:www-data /var/www/mediawiki/w/extensions/Widgets/compiled_templates" /run-all.sh
+    chmod 777 /var/www/mediawiki/w/extensions/Widgets/compiled_templates" /run-all.sh
   sed -i "/check_mount_points/i \
     chmod 777 /var/www/mediawiki/w/extensions/PageSync/Temp" /run-all.sh
   sed -i "/check_mount_points/i \
