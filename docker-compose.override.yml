@@ -1,0 +1,19 @@
+version: '3.7'
+# The above version is the Docker Compose manifest's version, not the Canasta Docker Compose stack's version.
+#
+# --- Canasta Stack for Docker Compose ---
+#
+# If you need to make changes to the stack, make them here.
+# Only edits to docker-compose.override.yml are officially supported by Canasta.
+#
+# Uncomment the commented services and add lines below them if you would like to make additional customizations to them.
+services:
+  #db:
+  #web:
+  #  image: ghcr.io/canastawiki/canasta:latest
+  #elasticsearch:
+  caddy:
+    ports:
+      - "8088:80"
+      - "8443:443"
+  #varnish:

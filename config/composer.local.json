@@ -1,0 +1,11 @@
+{
+	"require": {
+	},
+	"extra": {
+		"merge-plugin": {
+			"include": [
+                
+			]
+		}
+	}
+}
