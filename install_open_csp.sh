@@ -288,10 +288,23 @@ function setup_localsettings()
 
 function do_composer()
 {
+    # Install all Open-CSP extensions into the user-extensions folder that Canasta provides
+    $COMPOSER self-update
+    sed -i '/"merge-plugin":/i \
+                "installer-paths": {\
+                        "user-extensions/{$name}": [\
+                                "type:mediawiki-extension"\
+                        ],\
+                        "user-skins/{$name}": [\
+                                "type:mediawiki-skin"\
+                        ]\
+                },' "${MW_HOME}/composer.json"
     #5. Add the public WikibaseSolutions repository to your `composer.json` and run `composer update --no-dev` twice to install all required extensions and dependencies.
     $COMPOSER config repositories.38 composer https://gitlab.wikibase.nl/api/v4/group/38/-/packages/composer/ || exit_with_message
-    $COMPOSER update --no-dev || exit_with_message
-    $COMPOSER update --no-dev || exit_with_message
+    $COMPOSER update --no-dev --profile || exit_with_message
+    /create-symlinks.sh
+    #egrep -n 'installer-paths|^\s*\},?$' composer.json|grep -A1 installer|tr -d '\n'|sed 's/\([0-9]*\)[^0-9]*\([0-9]*\).*/sed -i "\1,\2d" composer.json\n"/'|sh
+    $COMPOSER update --no-dev --profile || exit_with_message
     # chmod -v +x extensions/Scribunto/includes/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua
 }
 
