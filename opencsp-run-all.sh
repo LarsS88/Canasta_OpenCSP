@@ -1,31 +1,34 @@
 #!/bin/bash
-
 if ! grep -q -F "# OPENCSP Scripts" "/run-all.sh" && [ -e /mediawiki/config/LocalSettings.php ]; then
   echo "FOUND";
-  sed -i "/# Symlink all extensions/i \
-  CSP_SETUP=0\n\
-if ! grep -q -F \"require_once('./settings/CSPSettings.php');\" \"\$MW_HOME/LocalSettings.php\"; then\n\
-  CSP_SETUP=1\n\
-  echo \"SETUP OPENCSP\";\n\
-  # OPENCSP Scripts\n\
-  /install_open_csp.sh \$MW_HOME/ --unattended --run=copy-files;\n\
-  sed -i s/-sf/-sfn/ /create-symlinks.sh\n\
-  /install_open_csp.sh \$MW_HOME/ --unattended --run=composer;\n\
-  sed -i 's,localhost:9200,elasticsearch:9200,' \$MW_HOME/settings/CSPSettings.php\n\
-else" /run-all.sh
-  sed -i "/^\/create-symlinks\.sh/a \
-    fi\n" /run-all.sh
+  sed -i "/check_mount_points/i \
+  if ! grep -q -F \"require_once('./settings/CSPSettings.php');\" \"/var/www/mediawiki/w/LocalSettings.php\"; then" /run-all.sh;
+  sed -i "/check_mount_points/i \
+    echo \"SETUP OPENCSP\";" /run-all.sh
+  sed -i "/check_mount_points/i \
+    # OPENCSP Scripts" /run-all.sh
+  sed -i "/check_mount_points/i \
+    /install_open_csp.sh /var/www/mediawiki/w/ --unattended --run=copy-files;" /run-all.sh
+  sed -i "/check_mount_points/i \
+    /install_open_csp.sh /var/www/mediawiki/w/ --unattended --run=setup-localsettings;" /run-all.sh
+  sed -i "/check_mount_points/i \
+    /install_open_csp.sh /var/www/mediawiki/w/ --unattended --run=composer;" /run-all.sh
+  sed -i "/check_mount_points/i \
+      sed -i 's,localhost:9200,elasticsearch:9200,' /var/www/mediawiki/w/settings/CSPSettings.php" /run-all.sh
 
   sed -i "/check_mount_points/i \
-  if [ x\$CSP_SETUP == x1 ]; then\n\
-  /install_open_csp.sh \$MW_HOME/ --unattended --run=setup-localsettings;\n\
-  /install_open_csp.sh \$MW_HOME/ --unattended --run=maintenance-scripts;\n\
-  /install_open_csp.sh \$MW_HOME/ --unattended --run=pagesync;\n\
-  /install_open_csp.sh \$MW_HOME/ --unattended --run=rebuild-data;\n\
-  chmod 777 \$MW_HOME/extensions/Widgets/compiled_templates\n\
-  chmod 777 \$MW_HOME/extensions/PageSync/Temp\n\
-  chmod 777 \$MW_HOME/extensions/FlexForm/uploads\n\
-fi\n" /run-all.sh;
+    /install_open_csp.sh /var/www/mediawiki/w/ --unattended --run=maintenance-scripts;" /run-all.sh
+  sed -i "/check_mount_points/i \
+    /install_open_csp.sh /var/www/mediawiki/w/ --unattended --run=pagesync;" /run-all.sh
+  sed -i "/check_mount_points/i \
+    /install_open_csp.sh /var/www/mediawiki/w/ --unattended --run=rebuild-data;" /run-all.sh
+  sed -i "/check_mount_points/i \
+    chmod 777 /var/www/mediawiki/w/extensions/Widgets/compiled_templates" /run-all.sh
+  sed -i "/check_mount_points/i \
+    chmod 777 /var/www/mediawiki/w/extensions/PageSync/Temp" /run-all.sh
+  sed -i "/check_mount_points/i \
+    chmod 777 /var/www/mediawiki/w/extensions/FlexForm/uploads" /run-all.sh
+  sed -i "/check_mount_points/i \
+  fi" /run-all.sh;
 fi
-
 /run-all.sh
