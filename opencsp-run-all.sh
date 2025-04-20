@@ -29,6 +29,8 @@ if ! grep -q -F "# OPENCSP Scripts" "/run-all.sh" && [ -e /mediawiki/config/Loca
   sed -i "/check_mount_points/i \
     chmod 777 /var/www/mediawiki/w/extensions/FlexForm/uploads" /run-all.sh
   sed -i "/check_mount_points/i \
+    chmod 777 /var/www/mediawiki/w/extensions/FlexForm/uploads" /run-all.sh
+  sed -i "/check_mount_points/i \
   fi" /run-all.sh;
 fi
 
