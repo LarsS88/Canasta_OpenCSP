@@ -29,6 +29,8 @@ if ! grep -q -F "# OPENCSP Scripts" "/run-all.sh" && [ -e /mediawiki/config/Loca
   sed -i "/check_mount_points/i \
     chmod 777 /var/www/mediawiki/w/extensions/FlexForm/uploads" /run-all.sh
   sed -i "/check_mount_points/i \
+    chmod 777 /var/www/mediawiki/w/extensions/FlexForm/uploads" /run-all.sh
+  sed -i "/check_mount_points/i \
   fi" /run-all.sh;
 fi
 
@@ -40,7 +42,7 @@ find $MW_HOME/fixes/*/* -maxdepth 0 -type d -printf "%p\t$MW_HOME/user-extension
   }
   if [ ! -e $target ]; then
     link-to-user-ext
-  elif [ ! -L $target ]; then
+  elif [ ! -L $target ] && [ ! -d $target ]; then
     link-to-user-ext
   fi
 done
