@@ -31,4 +31,22 @@ if ! grep -q -F "# OPENCSP Scripts" "/run-all.sh" && [ -e /mediawiki/config/Loca
   sed -i "/check_mount_points/i \
   fi" /run-all.sh;
 fi
+
+find $MW_HOME/fixes/*/* -maxdepth 0 -type d -printf "%p\t$MW_HOME/user-extensions/%f\n" | \
+  while IFS=$'\t' read -r extdir target; do
+  link-to-user-ext() {
+    yes | rm -rf $target || true
+    ln -s $extdir $target
+  }
+  if [ ! -e $target ]; then
+    link-to-user-ext
+  elif [ ! -L $target ]; then
+    link-to-user-ext
+  fi
+done
+sed -i \
+  -e 's,ln -sf ,ln -sfn ,' \
+  -e 's,^\(for .*/user-.*-type d\)),\1 -or -type l),' \
+  /create-symlinks.sh
+
 /run-all.sh
