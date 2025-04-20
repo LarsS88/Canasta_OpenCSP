@@ -42,7 +42,7 @@ find $MW_HOME/fixes/*/* -maxdepth 0 -type d -printf "%p\t$MW_HOME/user-extension
   }
   if [ ! -e $target ]; then
     link-to-user-ext
-  elif [ ! -L $target ]; then
+  elif [ ! -L $target ] && [ ! -d $target ]; then
     link-to-user-ext
   fi
 done
