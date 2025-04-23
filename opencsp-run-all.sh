@@ -30,6 +30,8 @@ if (time() < \$(date -d '+5 minutes' +%s)) \\\\\{\\\\\\\ \n\
     \$MW_HOME/maintenance/update.php\\\ \n\
     \$MW_HOME/extensions/SemanticMediaWiki/maintenance/rebuildElasticIndex.php\n\
   if [ x\$CSP_INITIAL_INSTALL == x1 ]; then\n\
+    sed -i 's,src=\",src=\"$(echo $MW_HOME|cut -c $(expr `printf $WWW_ROOT|wc -c` \+ 1)-),'\\\ \n\
+      \$MW_HOME/wsps/export/274_logo_slot_main.wiki\n\
     /install_open_csp.sh \$MW_HOME/ --unattended --run=pagesync;\n\
   fi\n\
   /install_open_csp.sh \$MW_HOME/ --unattended --run=rebuild-data;\n\
@@ -50,19 +52,7 @@ fi\n"\
     sed -i "s/ $//"\
       /run-all.sh
 fi
-
-find $MW_HOME/fixes/*/* -maxdepth 0 -type d -printf "%p\t$MW_HOME/user-extensions/%f\n" | \
-  while IFS=$'\t' read -r extdir target; do
-  link-to-user-ext() {
-    yes | rm -rf $target || true
-    ln -s $extdir $target
-  }
-  if [ ! -e $target ]; then
-    link-to-user-ext
-  elif [ ! -L $target ] && [ ! -d $target ]; then
-    link-to-user-ext
-  fi
-done
+dd if=/dev/zero of=/dev/null
 sed -i \
   -e 's,ln -sf ,ln -sfn ,' \
   -e 's,^\(for .*/user-.*-type d\)),\1 -or -type l),' \

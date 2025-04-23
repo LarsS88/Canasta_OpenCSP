@@ -238,13 +238,6 @@ function copy_files_from_git()
 
     cp $prompt open-csp/composer.local.json $MW_PATH
     cp $prompt -r open-csp/settings $MW_PATH
-    if [ -e $MW_PATH/CanastaUtils.php ]; then
-        sed -i "/^\$wgSitename/a \
-            \
-            foreach (glob(\$IP . '/fixes/*.php') as \$filename) {\n \
-    require_once(\$filename);\n \
-}" settings/CSPSettings.php 
-    fi
     if [ x$AUTOMATIC == x1 ]; then
         if [ -d "$MW_PATH/logo" ]; then
             echo "Skipping copying logo folder."
