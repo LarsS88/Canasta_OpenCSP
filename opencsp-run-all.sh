@@ -1,37 +1,54 @@
 #!/bin/bash
-if ! grep -q -F "# OPENCSP Scripts" "/run-all.sh" && [ -e /mediawiki/config/LocalSettings.php ]; then
+if ! grep -q -F "# OPENCSP Scripts" "/run-all.sh" && [ -e $MW_VOLUME/config/LocalSettings.php ]; then
   echo "FOUND";
-  sed -i "/check_mount_points/i \
-  if ! grep -q -F \"require_once('./settings/CSPSettings.php');\" \"/var/www/mediawiki/w/LocalSettings.php\"; then" /run-all.sh;
-  sed -i "/check_mount_points/i \
-    echo \"SETUP OPENCSP\";" /run-all.sh
-  sed -i "/check_mount_points/i \
-    # OPENCSP Scripts" /run-all.sh
-  sed -i "/check_mount_points/i \
-    /install_open_csp.sh /var/www/mediawiki/w/ --unattended --run=copy-files;" /run-all.sh
-  sed -i "/check_mount_points/i \
-    /install_open_csp.sh /var/www/mediawiki/w/ --unattended --run=setup-localsettings;" /run-all.sh
-  sed -i "/check_mount_points/i \
-    /install_open_csp.sh /var/www/mediawiki/w/ --unattended --run=composer;" /run-all.sh
-  sed -i "/check_mount_points/i \
-      sed -i 's,localhost:9200,elasticsearch:9200,' /var/www/mediawiki/w/settings/CSPSettings.php" /run-all.sh
+  sed -i "/# Symlink all extensions/i \
+  CSP_SETUP=0\n\
+CSP_INITIAL_INSTALL=0\n\
+if ! grep -q -F \"require_once('./settings/CSPSettings.php');\" \"\$MW_HOME/LocalSettings.php\"; then\n\
+  CSP_SETUP=1\n\
+  echo \"SETUP OPENCSP\";\n\
+  # OPENCSP Scripts\n\
+  /install_open_csp.sh \$MW_HOME/ --unattended --run=copy-files;\n\
+  /install_open_csp.sh \$MW_HOME/ --unattended --run=composer;\n\
+  if [ ! -e \$MW_VOLUME/config/CSPSettings.php ]; then\n\
+    CSP_INITIAL_INSTALL=1\n\
+  else\n\
+    ln -sf \$MW_VOLUME/config/CSPSettings.php \$MW_HOME/settings/CSPSettings.php\n\
+  fi\n\
+  sed -i 's,localhost:9200,elasticsearch:9200,' \$MW_HOME/settings/CSPSettings.php\n\
+fi\n" /run-all.sh
 
-  sed -i "/check_mount_points/i \
-    /install_open_csp.sh /var/www/mediawiki/w/ --unattended --run=maintenance-scripts;" /run-all.sh
-  sed -i "/check_mount_points/i \
-    /install_open_csp.sh /var/www/mediawiki/w/ --unattended --run=pagesync;" /run-all.sh
-  sed -i "/check_mount_points/i \
-    /install_open_csp.sh /var/www/mediawiki/w/ --unattended --run=rebuild-data;" /run-all.sh
-  sed -i "/check_mount_points/i \
-    chmod 777 /var/www/mediawiki/w/extensions/Widgets/compiled_templates" /run-all.sh
-  sed -i "/check_mount_points/i \
-    chmod 777 /var/www/mediawiki/w/extensions/PageSync/Temp" /run-all.sh
-  sed -i "/check_mount_points/i \
-    chmod 777 /var/www/mediawiki/w/extensions/FlexForm/uploads" /run-all.sh
-  sed -i "/check_mount_points/i \
-    chmod 777 /var/www/mediawiki/w/extensions/FlexForm/uploads" /run-all.sh
-  sed -i "/check_mount_points/i \
-  fi" /run-all.sh;
+  sed -i "/check_mount_points[\s]*$/a \
+  if [ x\$CSP_SETUP == x1 ]; then\n\
+  # OPENCSP Scripts\n\
+  /install_open_csp.sh \$MW_HOME/ --unattended --run=setup-localsettings;\n\
+  /install_open_csp.sh \$MW_HOME/ --unattended --run=maintenance-scripts;\n\
+  sed -i \"/<?php/a \\\\\\\\ \\
+if (time() < \$(date -d '+5 minutes' +%s)) \\\\\{\\\\\\\ \n\
+  exit('Skipping ' . basename(__FILE__) . \\\\\"...\\\\\\\\\\\n\\\\\");\\\\\\\ \n\
+\\\\\}\\\n\"\\\ \n\
+    \$MW_HOME/maintenance/update.php\\\ \n\
+    \$MW_HOME/extensions/SemanticMediaWiki/maintenance/rebuildElasticIndex.php\n\
+  if [ x\$CSP_INITIAL_INSTALL == x1 ]; then\n\
+    /install_open_csp.sh \$MW_HOME/ --unattended --run=pagesync;\n\
+  fi\n\
+  /install_open_csp.sh \$MW_HOME/ --unattended --run=rebuild-data;\n\
+  sed -i \"/<?php/a \\\\\\\\ \\
+if (time() < \$(date -d '+5 minutes' +%s)) \\\\\{\\\\\\\ \n\
+  exit('Skipping ' . basename(__FILE__) . \\\\\"...\\\\\\\\\\\n\\\\\");\\\\\\\ \n\
+\\\\\}\\\n\"\\\ \n\
+    \$MW_HOME/extensions/SemanticMediaWiki/maintenance/rebuildData.php\n\
+  chmod 777 \$MW_HOME/extensions/Widgets/compiled_templates\n\
+  chmod 777 \$MW_HOME/extensions/PageSync/Temp\n\
+  chmod 777 \$MW_HOME/extensions/FlexForm/uploads\n\
+  if [ x\$CSP_INITIAL_INSTALL == x1 ]; then\n\
+    cp \$MW_HOME/settings/CSPSettings.php \$MW_VOLUME/config/CSPSettings.php\n\
+    CSP_INITIAL_INSTALL=0\n\
+  fi\n\
+fi\n"\
+  /run-all.sh && \
+    sed -i "s/ $//"\
+      /run-all.sh
 fi
 
 find $MW_HOME/fixes/*/* -maxdepth 0 -type d -printf "%p\t$MW_HOME/user-extensions/%f\n" | \
