@@ -52,7 +52,7 @@ fi\n"\
     sed -i "s/ $//"\
       /run-all.sh
 fi
-dd if=/dev/zero of=/dev/null
+
 sed -i \
   -e 's,ln -sf ,ln -sfn ,' \
   -e 's,^\(for .*/user-.*-type d\)),\1 -or -type l),' \
